@@ -3,1416 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shadow Fight Mobile</title>
+    <title>Combat Titans</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ESTILOS MÍNIMOS PARA FUNCIONAR */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
             touch-action: manipulation;
         }
         
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-            touch-action: none;
-        }
-        
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        #gameContainer {
-            width: 100%;
-            height: 100%;
-            max-width: 500px;
-            max-height: 900px;
-            position: relative;
-            background: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
             overflow: hidden;
-            border: 2px solid #333;
+            width: 100vw;
+            height: 100vh;
         }
         
-        canvas {
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        
-        #gameCanvas {
-            z-index: 1;
+        .container {
             width: 100%;
             height: 100%;
-        }
-        
-        #uiCanvas {
-            z-index: 2;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        /* UI Superior */
-        .top-ui {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 120px;
-            z-index: 3;
-            padding: 10px 15px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
-            pointer-events: none;
-        }
-        
-        .health-bars {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 100%;
-        }
-        
-        .player-health {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .enemy-health {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-        
-        .health-bar {
-            width: 150px;
-            height: 20px;
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #444;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 5px 0;
-        }
-        
-        .health-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-        
-        #playerHealthFill {
-            background: linear-gradient(to right, #3498db, #2980b9);
-            width: 100%;
-        }
-        
-        #enemyHealthFill {
-            background: linear-gradient(to left, #e74c3c, #c0392b);
-            width: 100%;
-        }
-        
-        .player-name {
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-        
-        .round-info {
-            position: absolute;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #f1c40f;
-            font-size: 16px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            text-align: center;
-        }
-        
-        /* Controles Inferiores */
-        .controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 200px;
-            z-index: 3;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            pointer-events: none;
-        }
-        
-        .left-controls {
-            pointer-events: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .right-controls {
-            pointer-events: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-        }
-        
-        .joystick-container {
-            width: 130px;
-            height: 130px;
             position: relative;
-        }
-        
-        .joystick-base {
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-        
-        .joystick-handle {
-            width: 60px;
-            height: 60px;
-            background: rgba(52, 152, 219, 0.9);
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            transition: transform 0.05s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        
-        .action-button {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: rgba(231, 76, 60, 0.9);
-            border: 3px solid rgba(255, 255, 255, 0.6);
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.1s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+        
+        .game-title {
+            font-size: 3.5rem;
             text-align: center;
-            line-height: 1.2;
-            user-select: none;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px #ff0000, 0 0 20px #ff4400;
+            animation: title-glow 2s infinite alternate;
         }
         
-        .action-button:active {
-            transform: scale(0.92);
-            background: rgba(192, 57, 43, 0.9);
+        @keyframes title-glow {
+            0% { text-shadow: 0 0 10px #ff0000, 0 0 20px #ff4400; }
+            100% { text-shadow: 0 0 15px #ff5500, 0 0 30px #ff6600, 0 0 40px #ff0000; }
         }
         
-        #punchBtn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-        }
-        
-        #kickBtn {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-        }
-        
-        #jumpBtn {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            margin-top: 10px;
-        }
-        
-        /* Menu de Pause */
-        #pauseBtn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(241, 196, 15, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #pauseBtn:active {
-            transform: scale(0.95);
-        }
-        
-        .menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            border: 3px solid #f1c40f;
-            z-index: 10;
-            display: none;
-            min-width: 280px;
-            text-align: center;
-        }
-        
-        .menu h2 {
-            color: #f1c40f;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        
-        .menu-button {
-            background: #3498db;
+        .play-btn {
+            background: linear-gradient(45deg, #ff3300, #ff6600);
             color: white;
             border: none;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 20px 40px;
+            font-size: 1.8rem;
+            border-radius: 50px;
             cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
-        }
-        
-        .menu-button:hover {
-            background: #2980b9;
-        }
-        
-        /* Mensagens */
-        .message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 36px;
-            font-weight: bold;
-            color: #f1c40f;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            z-index: 5;
-        }
-        
-        #fightMessage {
-            font-size: 48px;
-            color: #e74c3c;
-        }
-        
-        #koMessage {
-            font-size: 42px;
-            color: #ff0000;
-        }
-        
-        /* Mensagem de Orientação */
-        .orientation-message {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            color: white;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            z-index: 100;
-            text-align: center;
-            padding: 20px;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(255, 51, 0, 0.4);
+            transition: all 0.3s;
+            margin-top: 2rem;
         }
         
-        .orientation-message h2 {
-            color: #f1c40f;
-            margin-bottom: 20px;
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 51, 0, 0.6);
         }
         
-        @media (orientation: landscape) {
-            .orientation-message {
-                display: flex;
-            }
-            #gameContainer {
-                display: none;
-            }
+        .play-btn:active {
+            transform: scale(0.98);
         }
         
-        @media (orientation: portrait) {
-            .orientation-message {
-                display: none;
-            }
+        /* Personagem simples */
+        .character {
+            width: 100px;
+            height: 200px;
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .head {
+            width: 50px;
+            height: 50px;
+            background: #ffcc99;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .body {
+            width: 60px;
+            height: 80px;
+            background: #2a5298;
+            margin: 0 auto;
+            border-radius: 20px;
+            position: relative;
+            top: -5px;
+        }
+        
+        .arm {
+            width: 15px;
+            height: 60px;
+            background: #2a5298;
+            position: absolute;
+            top: 10px;
+            border-radius: 10px;
+            animation: arm-swing 2s infinite alternate;
+        }
+        
+        .left-arm {
+            left: -20px;
+            transform-origin: top center;
+        }
+        
+        .right-arm {
+            right: -20px;
+            transform-origin: top center;
+            animation-delay: 0.5s;
+        }
+        
+        @keyframes arm-swing {
+            0% { transform: rotate(-30deg); }
+            100% { transform: rotate(30deg); }
+        }
+        
+        .leg {
+            width: 20px;
+            height: 70px;
+            background: #1e3c72;
+            position: absolute;
+            bottom: -70px;
+            border-radius: 10px;
+        }
+        
+        .left-leg {
+            left: 15px;
+            animation: leg-kick 3s infinite;
+        }
+        
+        .right-leg {
+            right: 15px;
+            animation: leg-kick 3s infinite 0.5s;
+        }
+        
+        @keyframes leg-kick {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-20deg); }
         }
     </style>
 </head>
 <body>
-    <!-- Mensagem para girar celular -->
-    <div class="orientation-message" id="orientationMessage">
-        <h2>📱 GIRE SEU CELULAR 📱</h2>
-        <p>Para melhor experiência, gire seu celular para a posição VERTICAL (em pé)</p>
-        <div style="margin-top: 30px; font-size: 60px;">⬆️</div>
+    <div class="container">
+        <!-- Título do jogo -->
+        <h1 class="game-title">COMBAT TITANS</h1>
+        
+        <!-- Personagem animado -->
+        <div class="character">
+            <div class="head"></div>
+            <div class="body"></div>
+            <div class="arm left-arm"></div>
+            <div class="arm right-arm"></div>
+            <div class="leg left-leg"></div>
+            <div class="leg right-leg"></div>
+        </div>
+        
+        <!-- Botão Jogar -->
+        <button class="play-btn" id="play-button" onclick="window.location.href='level-select.html'">
+            <i class="fas fa-play"></i>
+            <span>JOGAR</span>
+        </button>
     </div>
-    
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-        <canvas id="uiCanvas"></canvas>
-        
-        <!-- UI Superior -->
-        <div class="top-ui">
-            <div class="health-bars">
-                <div class="player-health">
-                    <div class="player-name">SHADOW</div>
-                    <div class="health-bar">
-                        <div class="health-fill" id="playerHealthFill"></div>
-                    </div>
-                    <div id="playerHealthText" style="color:#3498db; font-size:12px;">100%</div>
-                </div>
-                
-                <div class="round-info">
-                    <div id="roundText">ROUND 1</div>
-                    <div id="timerText" style="font-size:20px;">99</div>
-                </div>
-                
-                <div class="enemy-health">
-                    <div class="player-name">LYNX</div>
-                    <div class="health-bar">
-                        <div class="health-fill" id="enemyHealthFill"></div>
-                    </div>
-                    <div id="enemyHealthText" style="color:#e74c3c; font-size:12px; text-align:right;">100%</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Botão Pause -->
-        <button id="pauseBtn">II</button>
-        
-        <!-- Controles -->
-        <div class="controls">
-            <div class="left-controls">
-                <div class="joystick-container">
-                    <div class="joystick-base"></div>
-                    <div class="joystick-handle" id="joystickHandle"></div>
-                </div>
-                <button class="action-button" id="jumpBtn">PULO</button>
-            </div>
-            
-            <div class="right-controls">
-                <button class="action-button" id="punchBtn">SOCO</button>
-                <button class="action-button" id="kickBtn">CHUTE</button>
-            </div>
-        </div>
-        
-        <!-- Mensagens do Jogo -->
-        <div id="fightMessage" class="message">FIGHT!</div>
-        <div id="koMessage" class="message">K.O!</div>
-        <div id="winMessage" class="message">VITÓRIA!</div>
-        
-        <!-- Menu de Pause -->
-        <div id="pauseMenu" class="menu">
-            <h2>JOGO PAUSADO</h2>
-            <button class="menu-button" id="resumeBtn">CONTINUAR</button>
-            <button class="menu-button" id="restartBtn">REINICIAR</button>
-            <button class="menu-button" id="soundBtn">SOM: ON</button>
-        </div>
-    </div>
-
-    <!-- Sons -->
-    <audio id="punchSound" preload="auto"></audio>
-    <audio id="kickSound" preload="auto"></audio>
-    <audio id="hitSound" preload="auto"></audio>
-    <audio id="jumpSound" preload="auto"></audio>
-    <audio id="bgMusic" loop preload="auto"></audio>
-    <audio id="koSound" preload="auto"></audio>
 
     <script>
-        // Configurações do Jogo
-        const config = {
-            canvasWidth: 0,
-            canvasHeight: 0,
-            groundLevel: 0.75, // 75% da tela é o chão
-            gravity: 0.8,
-            jumpForce: -16,
-            walkSpeed: 6,
-            runSpeed: 9,
-            punchDamage: 25,
-            kickDamage: 35,
-            punchRange: 65,
-            kickRange: 80,
-            roundTime: 99,
-            maxHealth: 100,
-            maxRounds: 3
-        };
-
-        // Estado do Jogo
-        const gameState = {
-            isPaused: false,
-            isFighting: false,
-            round: 1,
-            roundTime: config.roundTime,
-            scores: [0, 0], // [player, enemy]
-            soundEnabled: true,
-            joystick: {
-                isActive: false,
-                x: 0,
-                y: 0,
-                baseX: 0,
-                baseY: 0,
-                maxDistance: 45
-            },
-            hitEffects: [],
-            messages: []
-        };
-
-        // Elementos DOM
-        const elements = {
-            gameCanvas: null,
-            uiCanvas: null,
-            ctx: null,
-            uiCtx: null,
-            playerHealthFill: document.getElementById('playerHealthFill'),
-            enemyHealthFill: document.getElementById('enemyHealthFill'),
-            playerHealthText: document.getElementById('playerHealthText'),
-            enemyHealthText: document.getElementById('enemyHealthText'),
-            roundText: document.getElementById('roundText'),
-            timerText: document.getElementById('timerText'),
-            joystickHandle: document.getElementById('joystickHandle'),
-            fightMessage: document.getElementById('fightMessage'),
-            koMessage: document.getElementById('koMessage'),
-            winMessage: document.getElementById('winMessage'),
-            pauseBtn: document.getElementById('pauseBtn'),
-            pauseMenu: document.getElementById('pauseMenu'),
-            resumeBtn: document.getElementById('resumeBtn'),
-            restartBtn: document.getElementById('restartBtn'),
-            soundBtn: document.getElementById('soundBtn'),
-            punchBtn: document.getElementById('punchBtn'),
-            kickBtn: document.getElementById('kickBtn'),
-            jumpBtn: document.getElementById('jumpBtn'),
-            orientationMessage: document.getElementById('orientationMessage')
-        };
-
-        // Personagens
-        class Character {
-            constructor(x, color, name, isPlayer) {
-                this.x = x;
-                this.y = 0;
-                this.width = 60;
-                this.height = 140;
-                this.velocityX = 0;
-                this.velocityY = 0;
-                this.health = config.maxHealth;
-                this.color = color;
-                this.name = name;
-                this.direction = isPlayer ? 1 : -1;
-                this.isPlayer = isPlayer;
-                this.isJumping = false;
-                this.isCrouching = false;
-                this.isPunching = false;
-                this.isKicking = false;
-                this.isBlocking = false;
-                this.attackTimer = 0;
-                this.walkCycle = 0;
-                this.animationFrame = 0;
-                this.legAngle = 0;
-                this.armAngle = 0;
-                this.hitStun = 0;
-                
-                // Sprites Shadow Fight 2 style
-                this.sprites = {
-                    idle: this.createSprite('idle'),
-                    walk: this.createSprite('walk'),
-                    punch: this.createSprite('punch'),
-                    kick: this.createSprite('kick'),
-                    jump: this.createSprite('jump'),
-                    hurt: this.createSprite('hurt')
-                };
-            }
-            
-            createSprite(type) {
-                // Criar sprites simples no estilo Shadow Fight 2
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = this.width;
-                canvas.height = this.height;
-                
-                ctx.fillStyle = this.color;
-                
-                switch(type) {
-                    case 'idle':
-                        // Corpo
-                        ctx.fillRect(20, 0, 20, 100);
-                        // Cabeça
-                        ctx.beginPath();
-                        ctx.arc(30, -10, 15, 0, Math.PI * 2);
-                        ctx.fill();
-                        // Braços
-                        ctx.fillRect(10, 30, 20, 10);
-                        ctx.fillRect(30, 30, 20, 10);
-                        // Pernas
-                        ctx.fillRect(15, 100, 15, 40);
-                        ctx.fillRect(30, 100, 15, 40);
-                        break;
-                    case 'walk':
-                        // Corpo inclinado
-                        ctx.fillRect(20, 0, 20, 100);
-                        // Cabeça
-                        ctx.beginPath();
-                        ctx.arc(30, -10, 15, 0, Math.PI * 2);
-                        ctx.fill();
-                        // Braços balançando
-                        ctx.save();
-                        ctx.translate(20, 35);
-                        ctx.rotate(0.3);
-                        ctx.fillRect(0, 0, 25, 10);
-                        ctx.restore();
-                        
-                        ctx.save();
-                        ctx.translate(40, 35);
-                        ctx.rotate(-0.3);
-                        ctx.fillRect(0, 0, 25, 10);
-                        ctx.restore();
-                        // Pernas andando
-                        ctx.save();
-                        ctx.translate(22, 100);
-                        ctx.rotate(0.4);
-                        ctx.fillRect(0, 0, 15, 40);
-                        ctx.restore();
-                        
-                        ctx.save();
-                        ctx.translate(38, 100);
-                        ctx.rotate(-0.4);
-                        ctx.fillRect(0, 0, 15, 40);
-                        ctx.restore();
-                        break;
-                    case 'punch':
-                        // Corpo
-                        ctx.fillRect(20, 0, 20, 100);
-                        // Cabeça
-                        ctx.beginPath();
-                        ctx.arc(30, -10, 15, 0, Math.PI * 2);
-                        ctx.fill();
-                        // Braço socando
-                        ctx.save();
-                        ctx.translate(50, 35);
-                        ctx.rotate(0.8);
-                        ctx.fillRect(0, 0, 40, 12);
-                        // Punho
-                        ctx.beginPath();
-                        ctx.arc(40, 6, 10, 0, Math.PI * 2);
-                        ctx.fill();
-                        ctx.restore();
-                        // Outro braço
-                        ctx.fillRect(10, 30, 20, 10);
-                        // Pernas
-                        ctx.fillRect(15, 100, 15, 40);
-                        ctx.fillRect(30, 100, 15, 40);
-                        break;
-                    case 'kick':
-                        // Corpo
-                        ctx.fillRect(20, 0, 20, 100);
-                        // Cabeça
-                        ctx.beginPath();
-                        ctx.arc(30, -10, 15, 0, Math.PI * 2);
-                        ctx.fill();
-                        // Braços
-                        ctx.fillRect(10, 30, 20, 10);
-                        ctx.fillRect(30, 30, 20, 10);
-                        // Perna chutando
-                        ctx.save();
-                        ctx.translate(35, 90);
-                        ctx.rotate(1.2);
-                        ctx.fillRect(0, 0, 15, 50);
-                        // Pé
-                        ctx.fillRect(45, 0, 20, 10);
-                        ctx.restore();
-                        // Outra perna
-                        ctx.fillRect(15, 100, 15, 40);
-                        break;
-                }
-                
-                return canvas;
-            }
-            
-            update() {
-                // Atualizar timers
-                if (this.attackTimer > 0) this.attackTimer--;
-                if (this.hitStun > 0) this.hitStun--;
-                
-                // Resetar estados de ataque
-                if (this.attackTimer === 0) {
-                    this.isPunching = false;
-                    this.isKicking = false;
-                }
-                
-                // Aplicar física
-                this.velocityY += config.gravity;
-                this.x += this.velocityX;
-                this.y += this.velocityY;
-                
-                // Limites da tela
-                const margin = this.width / 2;
-                this.x = Math.max(margin, Math.min(config.canvasWidth - margin, this.x));
-                
-                // Colisão com chão
-                const groundY = config.canvasHeight * config.groundLevel - this.height;
-                if (this.y > groundY) {
-                    this.y = groundY;
-                    this.velocityY = 0;
-                    this.isJumping = false;
-                }
-                
-                // Fricção
-                this.velocityX *= 0.85;
-                
-                // Animação
-                this.animationFrame++;
-                if (Math.abs(this.velocityX) > 0.5 && !this.isJumping) {
-                    this.walkCycle = (this.walkCycle + 1) % 20;
-                }
-            }
-            
-            draw(ctx) {
-                ctx.save();
-                
-                // Posicionar
-                ctx.translate(this.x, this.y);
-                
-                // Espelhar se necessário
-                if (this.direction === -1) {
-                    ctx.scale(-1, 1);
-                }
-                
-                // Determinar sprite atual
-                let sprite = this.sprites.idle;
-                
-                if (this.isJumping) {
-                    sprite = this.sprites.jump;
-                } else if (this.isPunching) {
-                    sprite = this.sprites.punch;
-                } else if (this.isKicking) {
-                    sprite = this.sprites.kick;
-                } else if (Math.abs(this.velocityX) > 1 && !this.isJumping) {
-                    sprite = this.sprites.walk;
-                }
-                
-                // Desenhar sprite
-                ctx.drawImage(sprite, -this.width/2, 0);
-                
-                // Efeito de dano
-                if (this.hitStun > 0) {
-                    ctx.globalAlpha = 0.7;
-                    ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-                    ctx.fillRect(-this.width/2, 0, this.width, this.height);
-                }
-                
-                ctx.restore();
-            }
-            
-            punch() {
-                if (this.attackTimer > 0 || this.hitStun > 0) return false;
-                this.isPunching = true;
-                this.attackTimer = 15;
-                return config.punchDamage;
-            }
-            
-            kick() {
-                if (this.attackTimer > 0 || this.hitStun > 0) return false;
-                this.isKicking = true;
-                this.attackTimer = 20;
-                return config.kickDamage;
-            }
-            
-            jump() {
-                if (!this.isJumping) {
-                    this.velocityY = config.jumpForce;
-                    this.isJumping = true;
-                    return true;
-                }
-                return false;
-            }
-            
-            takeDamage(damage) {
-                this.health = Math.max(0, this.health - damage);
-                this.hitStun = 10;
-                return this.health <= 0;
-            }
-            
-            isAttacking() {
-                return this.isPunching || this.isKicking;
-            }
-            
-            getAttackRange() {
-                if (this.isPunching) return config.punchRange;
-                if (this.isKicking) return config.kickRange;
-                return 0;
-            }
-            
-            getAttackDamage() {
-                if (this.isPunching) return config.punchDamage;
-                if (this.isKicking) return config.kickDamage;
-                return 0;
-            }
-        }
-
-        // Variáveis do jogo
-        let player, enemy;
-        let roundTimer;
-        let hitEffects = [];
-
-        // Inicialização
-        function init() {
-            // Configurar canvases
-            elements.gameCanvas = document.getElementById('gameCanvas');
-            elements.uiCanvas = document.getElementById('uiCanvas');
-            elements.ctx = elements.gameCanvas.getContext('2d');
-            elements.uiCtx = elements.uiCanvas.getContext('2d');
-            
-            resizeGame();
-            
-            // Criar personagens (Shadow e Lynx do Shadow Fight 2)
-            player = new Character(config.canvasWidth * 0.3, '#3498db', 'SHADOW', true);
-            enemy = new Character(config.canvasWidth * 0.7, '#e74c3c', 'LYNX', false);
-            
-            // Configurar controles
-            setupControls();
-            
-            // Configurar sons
-            setupSounds();
-            
-            // Iniciar jogo
-            startRound();
-            gameLoop();
-            
-            // Verificar orientação
-            checkOrientation();
-            window.addEventListener('resize', checkOrientation);
-            window.addEventListener('orientationchange', checkOrientation);
-        }
-
-        function resizeGame() {
-            const container = document.getElementById('gameContainer');
-            config.canvasWidth = container.clientWidth;
-            config.canvasHeight = container.clientHeight;
-            
-            elements.gameCanvas.width = config.canvasWidth;
-            elements.gameCanvas.height = config.canvasHeight;
-            elements.uiCanvas.width = config.canvasWidth;
-            elements.uiCanvas.height = config.canvasHeight;
-        }
-
-        function checkOrientation() {
-            if (window.innerHeight > window.innerWidth) {
-                // Portrait (correto)
-                elements.orientationMessage.style.display = 'none';
-                document.getElementById('gameContainer').style.display = 'block';
-            } else {
-                // Landscape (mostrar mensagem)
-                elements.orientationMessage.style.display = 'flex';
-                document.getElementById('gameContainer').style.display = 'none';
-            }
-            resizeGame();
-        }
-
-        function setupControls() {
-            // Joystick
-            elements.joystickHandle.addEventListener('touchstart', startJoystick);
-            elements.joystickHandle.addEventListener('mousedown', startJoystick);
-            
-            document.addEventListener('touchmove', moveJoystick, { passive: false });
-            document.addEventListener('mousemove', moveJoystick);
-            document.addEventListener('touchend', endJoystick);
-            document.addEventListener('mouseup', endJoystick);
-            
-            // Botões de ação
-            elements.punchBtn.addEventListener('touchstart', () => playerAttack('punch'));
-            elements.punchBtn.addEventListener('mousedown', () => playerAttack('punch'));
-            
-            elements.kickBtn.addEventListener('touchstart', () => playerAttack('kick'));
-            elements.kickBtn.addEventListener('mousedown', () => playerAttack('kick'));
-            
-            elements.jumpBtn.addEventListener('touchstart', () => {
-                if (player.jump()) playSound('jump');
-            });
-            elements.jumpBtn.addEventListener('mousedown', () => {
-                if (player.jump()) playSound('jump');
-            });
-            
-            // Menu
-            elements.pauseBtn.addEventListener('click', togglePause);
-            elements.resumeBtn.addEventListener('click', togglePause);
-            elements.restartBtn.addEventListener('click', restartGame);
-            elements.soundBtn.addEventListener('click', toggleSound);
-            
-            // Prevenir zoom
-            document.addEventListener('gesturestart', (e) => e.preventDefault());
-            document.addEventListener('touchmove', (e) => {
-                if (e.scale !== 1) e.preventDefault();
-            }, { passive: false });
-        }
-
-        function setupSounds() {
-            // Configurar sons básicos (usando sons simples)
-            if (gameState.soundEnabled) {
-                try {
-                    const bgMusic = elements.bgMusic;
-                    bgMusic.volume = 0.3;
-                    bgMusic.play().catch(e => console.log("Música bloqueada"));
-                } catch (e) {
-                    console.log("Erro de áudio:", e);
-                }
-            }
-        }
-
-        // Controles do Joystick
-        function startJoystick(e) {
-            e.preventDefault();
-            const rect = e.target.getBoundingClientRect();
-            gameState.joystick.baseX = rect.left + rect.width / 2;
-            gameState.joystick.baseY = rect.top + rect.height / 2;
-            gameState.joystick.isActive = true;
-            updateJoystickPosition(e);
-        }
-
-        function moveJoystick(e) {
-            if (!gameState.joystick.isActive) return;
-            e.preventDefault();
-            updateJoystickPosition(e);
-        }
-
-        function updateJoystickPosition(e) {
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            let dx = clientX - gameState.joystick.baseX;
-            let dy = clientY - gameState.joystick.baseY;
-            
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance > gameState.joystick.maxDistance) {
-                dx = (dx / distance) * gameState.joystick.maxDistance;
-                dy = (dy / distance) * gameState.joystick.maxDistance;
-            }
-            
-            gameState.joystick.x = dx;
-            gameState.joystick.y = dy;
-            
-            // Mover joystick visual
-            elements.joystickHandle.style.transform = 
-                `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-            
-            // Controlar personagem
-            if (Math.abs(dx) > 15) {
-                const speed = Math.abs(dy) > 25 ? config.runSpeed : config.walkSpeed;
-                player.velocityX = (dx > 0 ? speed : -speed);
-                player.direction = dx > 0 ? 1 : -1;
-            } else {
-                player.velocityX = 0;
-            }
-            
-            // Agachar (para baixo)
-            player.isCrouching = dy > 20;
-        }
-
-        function endJoystick() {
-            if (!gameState.joystick.isActive) return;
-            gameState.joystick.isActive = false;
-            gameState.joystick.x = 0;
-            gameState.joystick.y = 0;
-            
-            elements.joystickHandle.style.transform = 'translate(-50%, -50%)';
-            player.velocityX = 0;
-            player.isCrouching = false;
-        }
-
-        function playerAttack(type) {
-            if (gameState.isPaused || !gameState.isFighting || player.hitStun > 0) return;
-            
-            let damage = 0;
-            if (type === 'punch') {
-                damage = player.punch();
-                if (damage) playSound('punch');
-            } else if (type === 'kick') {
-                damage = player.kick();
-                if (damage) playSound('kick');
-            }
-            
-            if (damage) {
-                checkAttackCollision(player, enemy, damage);
-            }
-        }
-
-        // Sistema de Combate
-        function checkAttackCollision(attacker, defender, damage) {
-            const distance = Math.abs(attacker.x - defender.x);
-            const attackRange = attacker.getAttackRange();
-            
-            if (distance < attackRange) {
-                // Verificar bloqueio
-                if (defender.isCrouching && !defender.isJumping) {
-                    // Bloqueado
-                    playSound('hit');
-                    createHitEffect(defender.x, defender.y - 50, 'block');
-                } else if (defender.isAttacking()) {
-                    // Clash (ambos atacam)
-                    const clashDamage = damage * 0.3;
-                    attacker.takeDamage(clashDamage);
-                    defender.takeDamage(clashDamage);
-                    playSound('hit');
-                    createHitEffect((attacker.x + defender.x) / 2, attacker.y - 50, 'clash');
-                    
-                    // Knockback
-                    attacker.velocityX = -attacker.direction * 5;
-                    defender.velocityX = -defender.direction * 5;
-                } else {
-                    // Golpe conectado
-                    const isKO = defender.takeDamage(damage);
-                    playSound('hit');
-                    createHitEffect(defender.x, defender.y - 50, 'hit');
-                    
-                    // Knockback
-                    defender.velocityX = attacker.direction * 8;
-                    
-                    if (isKO) {
-                        endRound(attacker === player ? 'player' : 'enemy');
-                    }
-                }
-                
-                updateHealthBars();
-            }
-        }
-
-        function updateHealthBars() {
-            const playerHealthPercent = (player.health / config.maxHealth) * 100;
-            const enemyHealthPercent = (enemy.health / config.maxHealth) * 100;
-            
-            elements.playerHealthFill.style.width = playerHealthPercent + '%';
-            elements.enemyHealthFill.style.width = enemyHealthPercent + '%';
-            
-            elements.playerHealthText.textContent = Math.round(playerHealthPercent) + '%';
-            elements.enemyHealthText.textContent = Math.round(enemyHealthPercent) + '%';
-        }
-
-        // Sistema de Rounds
-        function startRound() {
-            gameState.isFighting = true;
-            gameState.roundTime = config.roundTime;
-            elements.timerText.textContent = gameState.roundTime;
-            
-            // Resetar personagens
-            player.health = config.maxHealth;
-            enemy.health = config.maxHealth;
-            player.x = config.canvasWidth * 0.3;
-            enemy.x = config.canvasWidth * 0.7;
-            player.y = enemy.y = 0;
-            player.velocityX = player.velocityY = 0;
-            enemy.velocityX = enemy.velocityY = 0;
-            
-            updateHealthBars();
-            showMessage('fight', 2000);
-            
-            // Atualizar round display
-            elements.roundText.textContent = `ROUND ${gameState.round}`;
-            
-            // Iniciar timer
-            clearInterval(roundTimer);
-            roundTimer = setInterval(updateRoundTimer, 1000);
-        }
-
-        function updateRoundTimer() {
-            if (gameState.isPaused || !gameState.isFighting) return;
-            
-            gameState.roundTime--;
-            elements.timerText.textContent = gameState.roundTime;
-            
-            if (gameState.roundTime <= 0) {
-                endRound('timeout');
-            }
-        }
-
-        function endRound(winner) {
-            gameState.isFighting = false;
-            clearInterval(roundTimer);
-            
-            if (winner === 'player') {
-                gameState.scores[0]++;
-                showMessage('ko', 2000);
-                playSound('ko');
-            } else if (winner === 'enemy') {
-                gameState.scores[1]++;
-                showMessage('ko', 2000);
-                playSound('ko');
-            } else {
-                // Timeout - quem tem mais vida vence
-                if (player.health > enemy.health) {
-                    gameState.scores[0]++;
-                } else if (enemy.health > player.health) {
-                    gameState.scores[1]++;
-                }
-                // Empate não dá ponto
-            }
-            
-            // Verificar fim do jogo
-            if (gameState.scores[0] >= 2 || gameState.scores[1] >= 2 || gameState.round >= config.maxRounds) {
-                setTimeout(endGame, 3000);
-            } else {
-                gameState.round++;
-                setTimeout(startRound, 3000);
-            }
-        }
-
-        function endGame() {
-            let winner = '';
-            if (gameState.scores[0] > gameState.scores[1]) {
-                winner = 'SHADOW VENCEU!';
-            } else if (gameState.scores[1] > gameState.scores[0]) {
-                winner = 'LYNX VENCEU!';
-            } else {
-                winner = 'EMPATE!';
-            }
-            
-            elements.winMessage.textContent = winner;
-            showMessage('win', 4000);
-            
+        // Script simples para a tela inicial
+        document.getElementById('play-button').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
             setTimeout(() => {
-                alert(`FIM DE JOGO!\n\nSHADOW: ${gameState.scores[0]} vitórias\nLYNX            setTimeout(() => {
-                alert(`FIM DE JOGO!\n\nSHADOW: ${gameState.scores[0]} vitórias\nLYNX: ${gameState.scores[1]} vitórias`);
-                restartGame();
-            }, 4000);
-        }
-
-        // IA do Inimigo
-        function updateAI() {
-            if (!gameState.isFighting || gameState.isPaused || enemy.hitStun > 0) return;
-            
-            const distance = Math.abs(player.x - enemy.x);
-            
-            // Comportamento da IA
-            if (distance > 200) {
-                // Está longe - aproximar
-                enemy.velocityX = (player.x > enemy.x ? 1 : -1) * config.walkSpeed;
-                enemy.direction = player.x > enemy.x ? 1 : -1;
-            } else if (distance < 80) {
-                // Está muito perto - recuar
-                enemy.velocityX = (player.x > enemy.x ? -1 : 1) * config.walkSpeed;
-            } else {
-                // Distância média - manter distância
-                enemy.velocityX = 0;
-            }
-            
-            // Decidir ataque baseado na distância
-            const attackChance = Math.random();
-            if (attackChance < 0.02) { // 2% chance por frame
-                if (distance < config.kickRange) {
-                    // Escolher entre soco ou chute
-                    if (Math.random() > 0.5 && distance < config.punchRange) {
-                        const damage = enemy.punch();
-                        if (damage) {
-                            playSound('punch');
-                            checkAttackCollision(enemy, player, damage);
-                        }
-                    } else {
-                        const damage = enemy.kick();
-                        if (damage) {
-                            playSound('kick');
-                            checkAttackCollision(enemy, player, damage);
-                        }
-                    }
-                }
-            }
-            
-            // Pular ocasionalmente
-            if (Math.random() < 0.005 && !enemy.isJumping) {
-                enemy.jump();
-                playSound('jump');
-            }
-            
-            // Agachar ocasionalmente para defender
-            enemy.isCrouching = (Math.random() < 0.1 && distance < 120);
-        }
-
-        // Efeitos Visuais
-        function createHitEffect(x, y, type) {
-            hitEffects.push({
-                x: x,
-                y: y,
-                type: type,
-                size: 20,
-                alpha: 1.0,
-                life: 25
-            });
-        }
-
-        function updateHitEffects() {
-            for (let i = hitEffects.length - 1; i >= 0; i--) {
-                const effect = hitEffects[i];
-                effect.life--;
-                effect.alpha = effect.life / 25;
-                effect.size += 1.5;
-                
-                if (effect.life <= 0) {
-                    hitEffects.splice(i, 1);
-                }
-            }
-        }
-
-        function drawHitEffects() {
-            hitEffects.forEach(effect => {
-                elements.uiCtx.save();
-                elements.uiCtx.globalAlpha = effect.alpha;
-                
-                if (effect.type === 'hit') {
-                    elements.uiCtx.fillStyle = '#ff0000';
-                } else if (effect.type === 'block') {
-                    elements.uiCtx.fillStyle = '#3498db';
-                    elements.uiCtx.strokeStyle = '#ffffff';
-                    elements.uiCtx.lineWidth = 2;
-                    elements.uiCtx.beginPath();
-                    elements.uiCtx.arc(effect.x, effect.y, effect.size, 0, Math.PI * 2);
-                    elements.uiCtx.stroke();
-                } else {
-                    elements.uiCtx.fillStyle = '#ffff00';
-                }
-                
-                elements.uiCtx.beginPath();
-                elements.uiCtx.arc(effect.x, effect.y, effect.size, 0, Math.PI * 2);
-                elements.uiCtx.fill();
-                
-                elements.uiCtx.restore();
-            });
-        }
-
-        // Sistema de Mensagens
-        function showMessage(type, duration) {
-            // Esconder todas as mensagens primeiro
-            elements.fightMessage.style.opacity = '0';
-            elements.koMessage.style.opacity = '0';
-            elements.winMessage.style.opacity = '0';
-            
-            // Mostrar a mensagem específica
-            let messageElement;
-            switch(type) {
-                case 'fight':
-                    messageElement = elements.fightMessage;
-                    break;
-                case 'ko':
-                    messageElement = elements.koMessage;
-                    break;
-                case 'win':
-                    messageElement = elements.winMessage;
-                    break;
-            }
-            
-            if (messageElement) {
-                messageElement.style.opacity = '1';
-                setTimeout(() => {
-                    messageElement.style.opacity = '0';
-                }, duration);
-            }
-        }
-
-        // Sistema de Som
-        function playSound(soundName) {
-            if (!gameState.soundEnabled) return;
-            
-            try {
-                // Sons simples para não travar
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Frequências diferentes para sons diferentes
-                switch(soundName) {
-                    case 'punch':
-                        oscillator.frequency.value = 200;
-                        gainNode.gain.value = 0.1;
-                        break;
-                    case 'kick':
-                        oscillator.frequency.value = 150;
-                        gainNode.gain.value = 0.15;
-                        break;
-                    case 'hit':
-                        oscillator.frequency.value = 100;
-                        gainNode.gain.value = 0.2;
-                        break;
-                    case 'jump':
-                        oscillator.frequency.value = 300;
-                        gainNode.gain.value = 0.05;
-                        break;
-                    case 'ko':
-                        oscillator.frequency.value = 400;
-                        gainNode.gain.value = 0.3;
-                        break;
-                }
-                
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.1);
-                
-            } catch (e) {
-                console.log("Erro de áudio:", e);
-            }
-        }
-
-        function toggleSound() {
-            gameState.soundEnabled = !gameState.soundEnabled;
-            elements.soundBtn.textContent = gameState.soundEnabled ? 'SOM: ON' : 'SOM: OFF';
-        }
-
-        // Controles de Jogo
-        function togglePause() {
-            gameState.isPaused = !gameState.isPaused;
-            
-            if (gameState.isPaused) {
-                elements.pauseMenu.style.display = 'block';
-            } else {
-                elements.pauseMenu.style.display = 'none';
-            }
-        }
-
-        function restartGame() {
-            gameState.round = 1;
-            gameState.scores = [0, 0];
-            gameState.isPaused = false;
-            gameState.isFighting = false;
-            
-            elements.pauseMenu.style.display = 'none';
-            startRound();
-        }
-
-        // Renderização
-        function drawBackground() {
-            const ctx = elements.ctx;
-            const width = config.canvasWidth;
-            const height = config.canvasHeight;
-            const groundY = height * config.groundLevel;
-            
-            // Céu noturno
-            const gradient = ctx.createLinearGradient(0, 0, 0, groundY);
-            gradient.addColorStop(0, '#0c2461');
-            gradient.addColorStop(0.5, '#1e3799');
-            gradient.addColorStop(1, '#4a69bd');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, groundY);
-            
-            // Chão
-            ctx.fillStyle = '#2d3436';
-            ctx.fillRect(0, groundY, width, height - groundY);
-            
-            // Detalhes do chão (faixas)
-            ctx.fillStyle = '#636e72';
-            for (let i = 0; i < width; i += 50) {
-                ctx.fillRect(i, groundY, 25, 8);
-            }
-            
-            // Linha central
-            ctx.beginPath();
-            ctx.moveTo(width/2, groundY - 150);
-            ctx.lineTo(width/2, groundY);
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([5, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            // Luz do ringue
-            const lightGradient = ctx.createRadialGradient(
-                width/2, groundY - 100, 0,
-                width/2, groundY - 100, 300
-            );
-            lightGradient.addColorStop(0, 'rgba(241, 196, 15, 0.1)');
-            lightGradient.addColorStop(1, 'rgba(241, 196, 15, 0)');
-            ctx.fillStyle = lightGradient;
-            ctx.fillRect(0, 0, width, groundY);
-        }
-
-        function drawUI() {
-            // Limpar UI canvas
-            elements.uiCtx.clearRect(0, 0, config.canvasWidth, config.canvasHeight);
-            
-            // Desenhar efeitos
-            drawHitEffects();
-            
-            // Desenhar informações de debug (opcional)
-            if (false) { // mudar para true para ver debug
-                elements.uiCtx.fillStyle = 'white';
-                elements.uiCtx.font = '12px Arial';
-                elements.uiCtx.fillText(`Player X: ${Math.round(player.x)}`, 10, 150);
-                elements.uiCtx.fillText(`Player Y: ${Math.round(player.y)}`, 10, 165);
-                elements.uiCtx.fillText(`Enemy X: ${Math.round(enemy.x)}`, 10, 180);
-                elements.uiCtx.fillText(`Distance: ${Math.abs(Math.round(player.x - enemy.x))}`, 10, 195);
-                elements.uiCtx.fillText(`Joystick X: ${Math.round(gameState.joystick.x)}`, 10, 210);
-                elements.uiCtx.fillText(`Joystick Y: ${Math.round(gameState.joystick.y)}`, 10, 225);
-            }
-        }
-
-        // Loop Principal do Jogo
-        function gameLoop() {
-            if (!gameState.isPaused && gameState.isFighting) {
-                // Atualizar jogadores
-                player.update();
-                enemy.update();
-                
-                // Atualizar IA
-                updateAI();
-                
-                // Atualizar efeitos
-                updateHitEffects();
-            }
-            
-            // Renderizar
-            elements.ctx.clearRect(0, 0, config.canvasWidth, config.canvasHeight);
-            
-            // Desenhar fundo
-            drawBackground();
-            
-            // Desenhar personagens
-            player.draw(elements.ctx);
-            enemy.draw(elements.ctx);
-            
-            // Desenhar UI
-            drawUI();
-            
-            // Continuar loop
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Inicializar quando a página carregar
-        window.addEventListener('load', init);
-        
-        // Prevenir comportamentos indesejados
-        document.addEventListener('touchmove', (e) => {
-            // Prevenir scroll apenas em elementos do jogo
-            if (e.target.tagName === 'CANVAS' || 
-                e.target.classList.contains('action-button') ||
-                e.target.id === 'joystickHandle' ||
-                e.target.id === 'pauseBtn') {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        document.addEventListener('gesturestart', (e) => {
-            e.preventDefault();
+                window.location.href = 'level-select.html';
+            }, 300);
         });
     </script>
 </body>
